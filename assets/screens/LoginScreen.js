@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { AppRegistry, ScrollView,Dimensions, Image,TouchableOpacity, Text, TextInput,View, StyleSheet,ImageBackground } from 'react-native';
+
+import { AppRegistry,KeyboardAvoidingView, AsyncStorage,ScrollView,Dimensions, Image,TouchableOpacity, Text, TextInput,View, StyleSheet,ImageBackground } from 'react-native';
 import bgImage from '../Images/login_background.png'
 import Icon from 'react-native-vector-icons/Ionicons'
 import logo from '../Images/icon.png'
@@ -7,36 +8,19 @@ token= 'cafc14d111ed6ac0e6991c6d7f6f65ce'
 const id='1107689822724816'
 const {width:WIDTH}=Dimensions.get('window')
 export default class LoginScreen extends React.Component {
-  constructor(){
-    super()
+  constructor(props){
+    super(props)
     this.state={
       showPass:true,
       press:false,
       responseJSON: null,
+      username:'',
+      password:'',
     }
   }
-  login = async () => {
-    const {
-      type,
-      token,
-    } = await Expo.Facebook.logInWithReadPermissionsAsync(id, {
-      permissions: ['public_profile', 'email', 'user_friends'],
-    });
+  
 
-    if (type === 'success') {
-      this.callGraph(token);
-
-      this.firebaseLogin(token);
-    }
-  };
-
-  showPass=() =>{
-    if(this.state.press==false){
-      this.setState({showPass:false,press:true})
-    }else{
-      this.setState({showPass:true,press:false})
-    }
-  }
+ 
     render() {
     
       return (
@@ -45,6 +29,7 @@ export default class LoginScreen extends React.Component {
           <Image source={logo} style={styles.Logo}/>
           <Text style={styles.logoText}>Awesome App</Text>
         </View>
+        <KeyboardAvoidingView  behavior="padding" >
         <View style={styles.InputContainer}>
           <Icon name={'ios-person'} size={28}  color={'rgba(255,255,255,0.7)'}
           style={styles.InputIcon}/>
@@ -53,9 +38,10 @@ export default class LoginScreen extends React.Component {
            placeholder={'Username'}
            placeholderTextColor={'rgba(255,255,255,0.7)'}
            underlineColorAndroid='transparent'
+           onChangeText={(username)=>this.setState({username})}
           />
         </View>
-        <View style={styles.InputContainer}>
+        <View behavior="padding"  style={styles.InputContainer}>
           <Icon name={'ios-lock'} size={28}  color={'rgba(255,255,255,0.7)'}
           style={styles.InputIcon}/>
           <TextInput
@@ -64,12 +50,14 @@ export default class LoginScreen extends React.Component {
              secureTextEntry={this.state.showPass}
              placeholderTextColor={'rgba(255,255,255,0.7)'}
              underlineColorAndroid='transparent'
+             onChangeText={(password)=>this.setState({password})}
           />
           <TouchableOpacity style={styles.btneye} onPress={this.showPass.bind(this)}>
             <Icon name={this.state.press==false?'ios-eye' :'ios-eye-off'} size={26} color={'rgba(255,255,255,0.7)'}/>
           </TouchableOpacity>
         </View>
-        <TouchableOpacity style={styles.btnLogin}>
+        </KeyboardAvoidingView>
+        <TouchableOpacity style={styles.btnLogin} onPress={()=>this.normalLogin()}>
           <Text style={styles.textLogin}>Login</Text>
          </TouchableOpacity>
          <TouchableOpacity style={styles.btnLoginfacebook} onPress={()=>this.login()}>
@@ -81,6 +69,52 @@ export default class LoginScreen extends React.Component {
         
       );
     }
+    normalLogin=()=>{
+    
+      fetch('http://192.168.1.105:3000/users',{
+        method:'POST',
+        headers:{
+          'Accept':'application/json',
+          'Content-Type':'application/json'
+        },
+        body:JSON.stringify({
+           username:this.state.username,
+           password:this.state.password,
+        })
+      }).then((response)=>response.json())
+        .then((res)=>{
+          
+
+          if(res.success===true){
+            AsyncStorage.setItem('user',res.user);
+            this.props.navigation.navigate('Profile')
+          }
+          else{alert(res.message)
+          }
+        }).done()
+    }
+    login = async () => {
+      const {
+        type,
+        token,
+      } = await Expo.Facebook.logInWithReadPermissionsAsync(id, {
+        permissions: ['public_profile', 'email', 'user_friends'],
+      });
+  
+      if (type === 'success') {
+        this.callGraph(token);
+  
+        this.firebaseLogin(token);
+      }
+    };
+    
+  showPass=() =>{
+    if(this.state.press==false){
+      this.setState({showPass:false,press:true})
+    }else{
+      this.setState({showPass:true,press:false})
+    }
+  }
   }
 
   const styles = StyleSheet.create({
