@@ -11,9 +11,11 @@ const Application = createStackNavigator({
     navigationOptions: {
       header: null
   }
-  },Profile:{screen: ProfileScreen}
+  },profile:{screen: ProfileScreen}
   
  
 });
 
 export default createAppContainer(Application);
+//to start server in www/awsmeproject/login
+//nodemon www start

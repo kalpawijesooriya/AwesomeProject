@@ -70,7 +70,7 @@ export default class LoginScreen extends React.Component {
       );
     }
     normalLogin=()=>{
-    
+     
       fetch('http://192.168.1.105:3000/users',{
         method:'POST',
         headers:{
@@ -87,7 +87,7 @@ export default class LoginScreen extends React.Component {
 
           if(res.success===true){
             AsyncStorage.setItem('user',res.user);
-            this.props.navigation.navigate('Profile')
+            this.props.navigation.navigate('profile')
           }
           else{alert(res.message)
           }
