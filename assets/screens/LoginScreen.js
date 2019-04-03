@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { AppRegistry,KeyboardAvoidingView, AsyncStorage,ScrollView,Dimensions, Image,TouchableOpacity, Text, TextInput,View, StyleSheet,ImageBackground } from 'react-native';
+import {StatusBar, AppRegistry,KeyboardAvoidingView, AsyncStorage,ScrollView,Dimensions, Image,TouchableOpacity, Text, TextInput,View, StyleSheet,ImageBackground } from 'react-native';
 import bgImage from '../Images/login_background.png'
 import Icon from 'react-native-vector-icons/Ionicons'
 import logo from '../Images/icon.png'
@@ -22,76 +22,75 @@ export default class LoginScreen extends React.Component {
 
  
     render() {
-    
+      const {navigate} = this.props.navigation;
       return (
         <ImageBackground source={bgImage} style={styles.backgroundcontainer}>
         <View style={styles.logoContainer}>
           <Image source={logo} style={styles.Logo}/>
-          <Text style={styles.logoText}>Awesome App</Text>
         </View>
         <KeyboardAvoidingView  behavior="padding" >
         <View style={styles.InputContainer}>
-          <Icon name={'ios-person'} size={28}  color={'rgba(255,255,255,0.7)'}
+          <Icon name={'ios-person'} size={28}  color={'rgba(0,0,0,1.35)'}
           style={styles.InputIcon}/>
           <TextInput
            style={styles.Input}
            placeholder={'Username'}
-           placeholderTextColor={'rgba(255,255,255,0.7)'}
+           placeholderTextColor={'rgba(0,0,0,0.35)'}
            underlineColorAndroid='transparent'
            onChangeText={(username)=>this.setState({username})}
           />
         </View>
         <View behavior="padding"  style={styles.InputContainer}>
-          <Icon name={'ios-lock'} size={28}  color={'rgba(255,255,255,0.7)'}
+          <Icon name={'ios-lock'} size={28}  color={'#000000'}
           style={styles.InputIcon}/>
           <TextInput
              style={styles.Input}
              placeholder={'Password'}
              secureTextEntry={this.state.showPass}
-             placeholderTextColor={'rgba(255,255,255,0.7)'}
+             placeholderTextColor={'rgba(0,0,0,0.35)'}
              underlineColorAndroid='transparent'
              onChangeText={(password)=>this.setState({password})}
           />
           <TouchableOpacity style={styles.btneye} onPress={this.showPass.bind(this)}>
-            <Icon name={this.state.press==false?'ios-eye' :'ios-eye-off'} size={26} color={'rgba(255,255,255,0.7)'}/>
+            <Icon name={this.state.press==false?'ios-eye' :'ios-eye-off'} size={26} color={'rgba(0,0,0,0.35)'}/>
           </TouchableOpacity>
         </View>
         </KeyboardAvoidingView>
         <TouchableOpacity style={styles.btnLogin} onPress={()=>this.normalLogin()}>
           <Text style={styles.textLogin}>Login</Text>
          </TouchableOpacity>
-         <TouchableOpacity style={styles.btnLoginfacebook} onPress={()=>this.login()}>
-         <Icon name="logo-facebook" style={styles.iconfb} size={28}  color={'rgba(255,255,255,0.7)'}></Icon>
-            <Text style={{ fontSize: 15, textAlign:'center' , color:'rgba(255,255,255,0.7)',}}>Login with Facebook</Text>
-         </TouchableOpacity>
-        
+         {/* <TouchableOpacity style={styles.btnLoginfacebook} onPress={()=>this.login()}>
+         <Icon name="logo-facebook" style={styles.iconfb} size={28}  color={'rgba(255,255,255,0.9)'}></Icon>
+            <Text style={{ fontSize: 15, textAlign:'center' , color:'rgba(255,255,255,0.9)',}}>Login with Facebook</Text>
+         </TouchableOpacity> */}
+        <Text style={styles.forgotpassword}   onPress={() => navigate('ForgotPassword')}>Forgot Password</Text>
    </ImageBackground >
         
       );
     }
     normalLogin=()=>{
      
-      fetch('http://192.168.1.105:3000/users',{
-        method:'POST',
-        headers:{
-          'Accept':'application/json',
-          'Content-Type':'application/json'
-        },
-        body:JSON.stringify({
-           username:this.state.username,
-           password:this.state.password,
-        })
-      }).then((response)=>response.json())
-        .then((res)=>{
+      // fetch('http://172.19.61.149:3000/users',{
+      //   method:'POST',
+      //   headers:{
+      //     'Accept':'application/json',
+      //     'Content-Type':'application/json'
+      //   },
+      //   body:JSON.stringify({
+      //      username:this.state.username,
+      //      password:this.state.password,
+      //   })
+      // }).then((response)=>response.json())
+      //   .then((res)=>{
           
 
-          if(res.success===true){
-            AsyncStorage.setItem('user',res.user);
-            this.props.navigation.navigate('profile')
-          }
-          else{alert(res.message)
-          }
-        }).done()
+      //     if(res.success===true){
+      //       AsyncStorage.setItem('user',res.user);
+            this.props.navigation.navigate('Profile')
+        //   }
+        //   else{alert(res.message)
+        //   }
+        // }).done()
     }
     login = async () => {
       const {
@@ -114,7 +113,7 @@ export default class LoginScreen extends React.Component {
     }else{
       this.setState({showPass:true,press:false})
     }
-  }
+   }
   }
 
   const styles = StyleSheet.create({
@@ -124,7 +123,7 @@ export default class LoginScreen extends React.Component {
         flex: 1,
         justifyContent:'center',
         alignItems:'center',
-       
+        marginTop: StatusBar.currentHeight
     },
     Logo:{
      width:120,
@@ -147,8 +146,8 @@ export default class LoginScreen extends React.Component {
       borderRadius:25,
       fontSize:16,
       paddingLeft:45,
-      backgroundColor:'rgba(0,0,0,0.35)',
-      color:'rgba(255,255,255,0.7)',
+      backgroundColor:'rgba(255,255,255,0.9)',
+      color:'rgba(0,0,0,0.7)',
       marginHorizontal:25
 
     },
@@ -170,14 +169,20 @@ export default class LoginScreen extends React.Component {
       width:WIDTH-55,
       height:45,
       borderRadius:25,
-     backgroundColor:'#432577',
+     backgroundColor:'#1cb1ac',
      justifyContent:'center',
      marginTop:20
     },
     textLogin:{
-      color:'rgba(255,255,255,0.7)',
+      color:'#ffffff',
       fontSize:16,
       textAlign:'center'
+    },
+    forgotpassword:{
+      color:'#1cb1ac',
+      fontSize:16,
+      textDecorationLine: 'underline',
+      marginTop:20,
     },
     btnLoginfacebook:{
       width:WIDTH-55,
